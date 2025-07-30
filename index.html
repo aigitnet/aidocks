@@ -182,7 +182,7 @@
         // --- MAIN APP LOGIC ---
         document.addEventListener('DOMContentLoaded', () => {
             // !!! IMPORTANT: Paste your deployed Web App URL here !!!
-            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyC4OVU_w6M9dF8O_7W-0MAAdGGqzNgVL7_111RsJcZi6PZrN93k4Jw60I1uHQ5teY/exec';
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw0tYIiSYHN3ZI4YONK14b9mRa_oTlBGgx7EAMzxR1bvmYoUP57jIAvUyRMkWeD8Xk/exec';
 
             // --- DOM Element References ---
             const searchInput = document.getElementById('search-input');
@@ -237,19 +237,25 @@
                 toolsGrid.innerHTML = '';
                 controlsFooter.classList.add('hidden');
                 
-                fetch(`${WEB_APP_URL}?action=getToolData`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'error') throw new Error(data.message);
-                        allTools = data;
-                        renderStats(allTools);
-                        populateCategoryFilter();
-                        updateDisplay();
-                    })
-                    .catch(error => {
-                        console.error('Fetch Error:', error);
-                        statusMessage.innerHTML = `<p class="text-red-400 font-semibold">Failed to load tools.</p><p class="text-sm mt-2">${error.message}</p>`;
-                    });
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'getToolData' }) // Send the action in the body
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'error') throw new Error(data.message);
+                    allTools = data;
+                    renderStats(allTools);
+                    populateCategoryFilter();
+                    updateDisplay();
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    statusMessage.innerHTML = `<p class="text-red-400 font-semibold">Failed to load tools.</p><p class="text-sm mt-2">${error.message}</p>`;
+                });
             }
 
             function renderStats(tools) {
